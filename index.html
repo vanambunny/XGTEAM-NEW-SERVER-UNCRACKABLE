@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Web Access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --dark-bg: #0d1117;
+            --surface-bg: rgba(22, 27, 34, 0.5);
+            --surface-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-purple: #bc8cff;
+            --accent-green: #3fb950;
+            --gold-accent: #FFD700;
+            --platinum-accent: #e5e4e2;
+            --red-accent: #f44136;
+            --win-blue: #58a6ff;
+            --win-green: #3fb950;
+            --win-red: #f85149;
+        }
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            overflow: hidden;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 10% 20%, rgba(88, 166, 255, 0.15), transparent 30%),
+                        radial-gradient(circle at 90% 80%, rgba(188, 140, 255, 0.15), transparent 30%),
+                        radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.05), transparent 50%);
+            z-index: -1;
+        }
+        .page {
+            display: none; width: 100%; height: 100%;
+            box-sizing: border-box; padding: 30px;
+            text-align: center; padding-top: 8vh;
+        }
+        .page.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        .content-box {
+            background: var(--surface-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            padding: 40px 50px; margin: 30px auto;
+            max-width: 800px; animation: slideUp 0.7s ease-out;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .content-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--gold-accent), var(--accent-purple));
+            opacity: 0.7;
+        }
+        .content-box h1 {
+            font-size: 3.2em; margin-bottom: 20px; font-weight: 700;
+            background: linear-gradient(90deg, var(--gold-accent), var(--accent-purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        h2 { 
+            color: var(--text-primary); 
+            font-size: 2em;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px; left: 50%;
+            transform: translateX(-50%);
+            width: 80px; height: 3px;
+            background: linear-gradient(90deg, var(--gold-accent), var(--accent-purple));
+            border-radius: 3px;
+        }
+        p { font-size: 1.1em; line-height: 1.6; color: var(--text-secondary); font-weight: 300; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Premium Navbar Styling */
+        .navbar {
+            position: fixed; bottom: 25px; left: 50%;
+            transform: translateX(-50%);
+            width: auto; max-width: 320px;
+            height: 70px;
+            background: rgba(22, 27, 34, 0.7);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(255, 215, 0, 0.1);
+            display: flex; justify-content: space-around; align-items: center;
+            padding: 0 15px; z-index: 1000;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        .nav-button {
+            background: transparent; border: none; color: var(--text-secondary);
+            cursor: pointer; border-radius: 50%; width: 55px; height: 55px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            z-index: 1;
+        }
+        .nav-button .icon { 
+            font-size: 1.7em; 
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            z-index: 2;
+        }
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(45deg, var(--gold-accent), var(--accent-purple));
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: -1;
+        }
+        .nav-button::after {
+            content: '';
+            position: absolute;
+            top: -3px; left: -3px;
+            width: calc(100% + 6px); height: calc(100% + 6px);
+            border-radius: 50%;
+            border: 2px solid transparent;
+            background: linear-gradient(45deg, var(--gold-accent), var(--accent-purple)) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+        .nav-button:hover:not(.disabled) {
+            transform: translateY(-5px);
+        }
+        .nav-button:hover:not(.disabled) .icon { 
+            color: white; 
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+            transform: scale(1.15);
+        }
+        .nav-button:hover:not(.disabled)::before {
+            opacity: 1;
+        }
+        .nav-button:hover:not(.disabled)::after {
+            opacity: 1;
+        }
+        .nav-button.active:not(.disabled) .icon {
+            color: white;
+            background: linear-gradient(45deg, var(--gold-accent), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+        }
+        .nav-button.disabled { opacity: 0.4; cursor: not-allowed; }
+        
+        .device-info { margin-top: 0; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .device-id-display { display: flex; align-items: center; gap: 10px; }
+        #deviceIdDisplay {
+            font-size: 1.1em; font-weight: 600; color: var(--text-primary);
+            background-color: rgba(13, 17, 23, 0.7); padding: 12px 25px;
+            border-radius: 12px; border: 1px solid var(--surface-border);
+            font-family: 'monospace';
+            letter-spacing: 1px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        .action-button {
+            background: linear-gradient(90deg, var(--gold-accent), var(--accent-purple));
+            color: white; border: none; padding: 12px 25px;
+            border-radius: 12px; cursor: pointer; transition: all 0.3s ease;
+            font-weight: 600; font-family: 'Inter', sans-serif;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+        .action-button:hover::before {
+            left: 100%;
+        }
+        .action-button:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+        }
+        #copyMessage { opacity: 0; transition: opacity 0.3s ease; color: var(--accent-green); font-weight: 600; }
+        #copyMessage.visible { opacity: 1; }
+        #accessStatus { font-weight: 600; font-size: 1.1em; transition: color 0.3s ease; }
+        .access-granted { color: var(--accent-green); } 
+        .access-not-granted { color: #f85149; }
+        
+        .dashboard-stats {
+            margin-top: 0; text-align: left;
+            background: rgba(0,0,0,0.25); padding: 25px;
+            border-radius: 12px; border: 1px solid var(--surface-border);
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        .dashboard-stats p {
+            font-size: 1.05em; margin: 12px 0;
+            display: flex; justify-content: space-between;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .dashboard-stats p:last-child { border-bottom: none; }
+        .dashboard-stats p strong { color: var(--text-secondary); font-weight: 500; }
+        .dashboard-stats p span { color: var(--text-primary); font-weight: 600; }
+        #dashboardTimeLeft, #wingoTimer { color: var(--accent-green) !important; }
+        #dashboardNoAccess { margin-top: 0 !important; }
+
+        .period-display {
+            text-align: center;
+            font-size: 1.05em;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            padding: 10px;
+            margin: 15px 0;
+            letter-spacing: 1px;
+            font-family: 'monospace';
+            border-radius: 8px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        #floatingView1 {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(15px);
+            display: none; justify-content: center; align-items: center;
+            z-index: 2000; animation: fadeIn 0.3s;
+        }
+        .floating-content {
+            background: #161b22; padding: 30px; border-radius: 16px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5); max-width: 380px;
+            width: 90%; text-align: left; position: relative;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        .floating-content::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 5px;
+            background: linear-gradient(90deg, var(--gold-accent), var(--accent-purple));
+        }
+        .close-button {
+            position: absolute; top: 15px; right: 20px; font-size: 2em;
+            color: var(--text-secondary); cursor: pointer; font-weight: 300;
+            transition: all 0.3s ease;
+        }
+        .close-button:hover { color: var(--text-primary); transform: rotate(90deg); }
+        .floating-content h2 {
+            font-size: 1.6em; margin-top: 0; margin-bottom: 20px;
+            border-bottom: 2px solid var(--accent-blue); padding-bottom: 10px;
+        }
+        .floating-content p { font-size: 1em; margin: 15px 0; }
+        .floating-content p strong { font-weight: 600; color: var(--text-primary); }
+        .floating-content a.action-button {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+        }
+
+        /* ========== PREDICTION PAGE (UPGRADED) ========== */
+        #prediction-page {
+            background-color: var(--dark-bg);
+            padding: 10px;
+            height: 100%;
+            box-sizing: border-box;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        #prediction-page .content-box {
+            background-color: var(--surface-bg);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 30px;
+            max-width: 650px;
+            margin: auto;
+            animation: none;
+            width: 100%;
+        }
+        #prediction-page .content-box::before { display: block; }
+
+        .prediction-wingo-container {
+            background: rgba(22, 27, 34, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            color: var(--text-primary);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        .prediction-header {
+            background: linear-gradient(90deg, var(--red-accent), #e23328);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            height: 60px;
+            margin-bottom: 20px;
+        }
+        .prediction-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 25%;
+            background: linear-gradient(90deg, #e23328, #d1251a);
+            transform: skewX(-20deg);
+            transform-origin: top right;
+            z-index: -1;
+        }
+
+        .prediction-header-left {
+            text-align: left;
+            line-height: 1.2;
+            z-index: 2;
+        }
+        .prediction-header-left span:first-child {
+            font-size: 1em;
+            font-weight: bold;
+            display: block;
+        }
+        .prediction-header-left span {
+            font-size: 0.75em;
+            display: block;
+            margin-top: 4px;
+            opacity: 0.9;
+        }
+
+        /* ====== PERFECTLY COMPACT TIMER & PERIOD BOXES ====== */
+        .prediction-boxes-right {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 2;
+        }
+        .prediction-timer-box {
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #000;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            height: 28px;
+            min-width: 70px;
+        }
+        .prediction-timer-label {
+            font-size: 0.55em !important;
+            font-weight: normal;
+            color: #666;
+            line-height: 1;
+            margin-bottom: 0;
+        }
+        .timer-countdown {
+            font-size: 0.8em !important;
+            letter-spacing: 1px;
+            line-height: 1;
+            font-family: 'monospace';
+        }
+        .prediction-period-box {
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #000;
+            padding: 3px 6px;
+            border-radius: 6px;
+            font-family: 'monospace';
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            height: 28px;
+            min-width: 70px;
+            font-size: 0.65em !important;
+            letter-spacing: 0.5px;
+        }
+
+        /* ====== PREDICTION BALLS GRID ====== */
+        .prediction-balls-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        .prediction-ball {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.3), 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            margin: 0 auto;
+        }
+        .prediction-ball:hover {
+            transform: scale(1.1);
+            box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.5), 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        .prediction-ball[data-number="0"] { background: linear-gradient(135deg, #7a00ff, #5001a1); }
+        .prediction-ball[data-number="1"] { background: linear-gradient(135deg, #00ff00, #008f00); }
+        .prediction-ball[data-number="2"] { background: linear-gradient(135deg, #ff0000, #a10101); }
+        .prediction-ball[data-number="3"] { background: linear-gradient(135deg, #00ff00, #008f00); }
+        .prediction-ball[data-number="4"] { background: linear-gradient(135deg, #ff0000, #a10101); }
+        .prediction-ball[data-number="5"] { background: linear-gradient(135deg, #7a00ff, #5001a1); }
+        .prediction-ball[data-number="6"] { background: linear-gradient(135deg, #ff0000, #a10101); }
+        .prediction-ball[data-number="7"] { background: linear-gradient(135deg, #00ff00, #008f00); }
+        .prediction-ball[data-number="8"] { background: linear-gradient(135deg, #ff0000, #a10101); }
+        .prediction-ball[data-number="9"] { background: linear-gradient(135deg, #00ff00, #008f00); }
+        
+        /* ====== PREDICTION INFO SECTION ====== */
+        .prediction-info {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+        }
+        .prediction-info p {
+            margin: 6px 0;
+            font-size: 0.9em;
+            display: flex;
+            justify-content: space-between;
+        }
+        .prediction-info p strong {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        .prediction-info p span {
+            font-family: 'monospace';
+            letter-spacing: 1px;
+        }
+
+        .prediction-content-placeholder {
+            padding: 50px;
+            color: var(--text-secondary);
+        }
+
+        /* ====== PREDICTION BUTTON ====== */
+        .predict-button-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        #predictButton {
+            background: linear-gradient(90deg, var(--gold-accent), var(--accent-purple));
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1em;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        #predictButton::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+        #predictButton:hover::before {
+            left: 100%;
+        }
+        #predictButton:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+        }
+        
+        /* ====== PREDICTION RESULT VIEW ====== */
+        #predictionResultView {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(15px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            animation: fadeIn 0.4s ease;
+        }
+        .result-container {
+            background: #161b22;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            overflow: hidden;
+        }
+        .result-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--gold-accent), var(--accent-purple));
+        }
+        .result-header {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        .result-header h2 {
+            margin: 0;
+            font-size: 1.8em;
+            background: linear-gradient(90deg, var(--gold-accent), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+        .result-body {
+            padding: 20px;
+        }
+        .prediction-type {
+            margin: 20px 0;
+            font-size: 1.8em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+        .prediction-type.big {
+            color: var(--win-red);
+        }
+        .prediction-type.small {
+            color: var(--win-blue);
+        }
+        .win-chance {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 20px 0;
+            color: var(--win-green);
+        }
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold-accent), transparent);
+            margin: 20px auto;
+            width: 80%;
+        }
+        .prediction-numbers {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+        .result-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        /* Number-specific colors for result balls */
+        .result-number.color-0 { background: linear-gradient(135deg, #7a00ff, #5001a1); }
+        .result-number.color-1 { background: linear-gradient(135deg, #00ff00, #008f00); }
+        .result-number.color-2 { background: linear-gradient(135deg, #ff0000, #a10101); }
+        .result-number.color-3 { background: linear-gradient(135deg, #00ff00, #008f00); }
+        .result-number.color-4 { background: linear-gradient(135deg, #ff0000, #a10101); }
+        .result-number.color-5 { background: linear-gradient(135deg, #7a00ff, #5001a1); }
+        .result-number.color-6 { background: linear-gradient(135deg, #ff0000, #a10101); }
+        .result-number.color-7 { background: linear-gradient(135deg, #00ff00, #008f00); }
+        .result-number.color-8 { background: linear-gradient(135deg, #ff0000, #a10101); }
+        .result-number.color-9 { background: linear-gradient(135deg, #00ff00, #008f00); }
+        
+        .prediction-details {
+            text-align: left;
+            margin: 25px 0;
+            padding: 0 20px;
+        }
+        .detail-item {
+            margin: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .detail-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .ai-confidence {
+            color: var(--win-green);
+        }
+        .pattern-analysis {
+            color: var(--win-blue);
+        }
+        .version {
+            color: var(--gold-accent);
+            font-weight: 600;
+            font-size: 1.1em;
+            margin: 20px 0;
+        }
+        .result-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+        }
+        .result-button {
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 1em;
+        }
+        #saveButton {
+            background: rgba(88, 166, 255, 0.2);
+            color: var(--accent-blue);
+            border: 1px solid var(--accent-blue);
+        }
+        #saveButton:hover {
+            background: rgba(88, 166, 255, 0.3);
+        }
+        #gotItButton {
+            background: linear-gradient(90deg, var(--gold-accent), var(--accent-purple));
+            color: white;
+        }
+        #gotItButton:hover {
+            opacity: 0.9;
+        }
+        
+        /* ====== RESPONSIVE ADJUSTMENTS ====== */
+        @media (max-width: 600px) {
+            .prediction-balls-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 8px;
+                padding: 12px;
+            }
+            .prediction-ball {
+                width: 42px;
+                height: 42px;
+                font-size: 1.4em;
+            }
+            .prediction-header {
+                height: 55px;
+                padding: 8px 12px;
+            }
+            .prediction-header-left span:first-child {
+                font-size: 0.9em;
+            }
+            .prediction-header-left span {
+                font-size: 0.65em;
+            }
+            .timer-countdown {
+                font-size: 0.85em;
+            }
+            .prediction-period-box {
+                font-size: 0.65em;
+            }
+            .result-number {
+                width: 50px;
+                height: 50px;
+                font-size: 1.6em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="home-page" class="page active">
+        <div class="content-box">
+            <div class="device-info">
+                <h2>Your Unique Device ID</h2>
+                <div class="device-id-display">
+                    <span id="deviceIdDisplay"></span>
+                    <button id="copyButton" class="action-button">Copy</button>
+                </div>
+                <span id="copyMessage">Copied!</span>
+                <p>Access Status: <span id="accessStatus"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard-page" class="page">
+        <div class="content-box">
+            <div id="dashboardInfo" class="dashboard-stats" style="display: none;">
+                <p><strong>Device ID:</strong> <span id="dashboardDeviceId"></span></p>
+                <p><strong>Access Status:</strong> <span id="dashboardStatus"></span></p>
+                <p><strong>Time Remaining:</strong> <span id="dashboardTimeLeft"></span></p>
+            </div>
+            
+            <div id="serverInfo" class="dashboard-stats" style="display: none; margin-top: 20px;">
+                <p><strong>Server:</strong> <span>Xg Private Server</span></p>
+                <p><strong>Wingo:</strong> <span>Wingo 1 Minute</span></p>
+                <p><strong>Version:</strong> <span>Private Server 1.1</span></p>
+                <div class="period-display">
+                    <span id="periodNumber">Loading...</span>
+                </div>
+                <p><strong>Time Left:</strong> <span id="wingoTimer">Loading...</span></p>
+            </div>
+
+            <p id="dashboardNoAccess" class="prediction-content-placeholder" style="display: block;">You do not have active access.</p>
+        </div>
+    </div>
+
+    <div id="prediction-page" class="page">
+        <div class="content-box">
+            <div id="predictionContent">
+                <div class="prediction-wingo-container">
+                    <div class="prediction-header">
+                        <div class="prediction-header-left">
+                            <span>WINGO 1 MIN</span>
+                            <span>XG PVT SERVER</span>
+                            <span>1-3 LEVEL</span>
+                        </div>
+                        <div class="prediction-boxes-right">
+                            <div class="prediction-timer-box">
+                                <span class="prediction-timer-label">Time remaining</span>
+                                <span class="timer-countdown">00:<span id="predictionWingoTimer"></span></span>
+                            </div>
+                            <div class="prediction-period-box">
+                                <span id="predictionPeriodNumber"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="prediction-balls-grid">
+                        <div class="prediction-ball" data-number="0">0</div>
+                        <div class="prediction-ball" data-number="1">1</div>
+                        <div class="prediction-ball" data-number="2">2</div>
+                        <div class="prediction-ball" data-number="3">3</div>
+                        <div class="prediction-ball" data-number="4">4</div>
+                        <div class="prediction-ball" data-number="5">5</div>
+                        <div class="prediction-ball" data-number="6">6</div>
+                        <div class="prediction-ball" data-number="7">7</div>
+                        <div class="prediction-ball" data-number="8">8</div>
+                        <div class="prediction-ball" data-number="9">9</div>
+                    </div>
+                    
+                    <div class="prediction-info">
+                        <p><strong>Current Period:</strong> <span id="infoPeriodNumber"></span></p>
+                        <p><strong>Time Left:</strong> <span id="infoTimeLeft">00:00</span></p>
+                        <p><strong>Last Result:</strong> <span id="infoLastResult">-</span></p>
+                    </div>
+                    
+                    <div class="predict-button-container">
+                        <button id="predictButton">PREDICTION</button>
+                    </div>
+                </div>
+            </div>
+            <p id="predictionNoAccess" class="prediction-content-placeholder" style="display: none;">You do not have access to the prediction feature. Please activate a premium plan.</p>
+        </div>
+    </div>
+
+    <div class="navbar">
+        <button class="nav-button active" onclick="loadPage('home', this)">
+            <i class="fas fa-diamond icon"></i>
+        </button>
+        <button id="dashboardButton" class="nav-button" onclick="loadPage('dashboard', this)">
+            <i class="fas fa-gauge-high icon"></i>
+        </button>
+        <button id="predictionButton" class="nav-button" onclick="checkAndLoadPrediction(this)">
+            <i class="fas fa-wand-magic-sparkles icon"></i>
+        </button>
+    </div>
+    
+    <div id="floatingView1" style="display: none;">
+        <div class="floating-content">
+            <span class="close-button" onclick="closeFloatingView()">&times;</span>
+            <h2>Access Required</h2>
+            <p><strong>DEVICE ID:</strong> <span id="floatingDeviceId"></span></p>
+            <p><strong>STATUS:</strong> <span class="access-not-granted">NOT GRANTED</span></p>
+            <p><strong>FEATURE:</strong> PREDICTION PAGE</p>
+            <p style="margin-top: 20px;">
+                <strong>Note:</strong> Your device ID requires admin approval for this feature. Please contact an administrator.
+            </p>
+            <a href="https://t.me/AIO_HACKER_BOT" target="_blank" class="action-button">
+                CONTACT ADMIN
+            </a>
+        </div>
+    </div>
+    
+    <div id="predictionResultView">
+        <div class="result-container">
+            <div class="result-header">
+                <h2>Prediction Result</h2>
+            </div>
+            <div class="result-body">
+                <div class="prediction-type big" id="predictionType">BIG</div>
+                <div class="win-chance">Confidence: <span id="winChance">High</span></div>
+                
+                <div class="divider"></div>
+                
+                <div class="prediction-numbers" id="predictionNumbers">
+                    <div class="result-number">5</div>
+                    <div class="result-number">9</div>
+                </div>
+                
+                <div class="prediction-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Final Number:</span>
+                        <span class="detail-value" id="finalNumDisplay"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Pattern Analysis:</span>
+                        <span class="detail-value pattern-analysis" id="patternAnalysis"></span>
+                    </div>
+                </div>
+                
+                <div class="version">Version 1.1</div>
+                
+                <div class="result-actions">
+                    <button class="result-button" id="saveButton">Save</button>
+                    <button class="result-button" id="gotItButton">Got It!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCev-fuSjM9hrGdbBJiVejadIZWRecOhvI",
+            databaseURL: "https://premiumweb-ac250-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "premiumweb-ac250",
+            appId: "1:306720995210:web:77dbf9ef5446d8021a7a73",
+        };
+        
+        let isAccessGranted = false;
+        let accessExpiryTimestamp = 0;
+        let countdownInterval = null;
+        let wingoTimerInterval = null;
+        let currentPeriodNumber = null;
+        let predictionMadeForCurrentPeriod = false;
+
+        function getDeviceId() {
+            let deviceId = localStorage.getItem('deviceId');
+            if (!deviceId) {
+                deviceId = 'XgTeam-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                localStorage.setItem('deviceId', deviceId);
+            }
+            return deviceId;
+        }
+
+        function updateCountdown() {
+            const now = Date.now();
+            const remaining = accessExpiryTimestamp - now;
+            if (remaining <= 0) {
+                clearInterval(countdownInterval);
+                document.getElementById('dashboardTimeLeft').textContent = 'Expired';
+                document.getElementById('dashboardStatus').textContent = 'Expired';
+                document.getElementById('dashboardStatus').style.color = '#f85149';
+                return;
+            }
+            const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+            let timeString = '';
+            if (days > 0) timeString += `${days}d `;
+            if (hours > 0 || days > 0) timeString += `${hours}h `;
+            timeString += `${minutes}m ${seconds}s`;
+            document.getElementById('dashboardTimeLeft').textContent = timeString;
+        }
+
+        function getWingoPeriod() {
+            const now = new Date();
+            const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const istTimeMs = utcTime + (330 * 60000); // 330 minutes = 5.5 hours for IST
+            const istDate = new Date(istTimeMs);
+
+            const startHour = 5;
+            const startMinute = 29;
+
+            let elapsedMinutes = (istDate.getHours() * 60 + istDate.getMinutes()) - (startHour * 60 + startMinute);
+            if (elapsedMinutes < 0) {
+                elapsedMinutes = (24 * 60) - ((startHour * 60 + startMinute) - (istDate.getHours() * 60 + istDate.getMinutes()));
+            }
+
+            const year = istDate.getFullYear();
+            const month = String(istDate.getMonth() + 1).padStart(2, '0');
+            const day = String(istDate.getDate()).padStart(2, '0');
+            const formattedDate = `${year}${month}${day}`;
+            const periodSuffix = String(elapsedMinutes).padStart(4, '0');
+            const fullPeriodNumber = `${formattedDate}100001${periodSuffix}`;
+            
+            return {
+                periodNumber: fullPeriodNumber,
+                secondsRemaining: 60 - istDate.getSeconds(),
+                istDate: istDate,
+            };
+        }
+        
+        function updateWingoTimer() {
+            const { periodNumber, secondsRemaining } = getWingoPeriod();
+            
+            if (periodNumber !== currentPeriodNumber) {
+                currentPeriodNumber = periodNumber;
+                predictionMadeForCurrentPeriod = false;
+                document.getElementById('predictButton').disabled = false;
+                document.getElementById('predictButton').textContent = 'PREDICTION';
+                checkAndDisplayPrediction();
+            }
+
+            const formattedSeconds = String(secondsRemaining).padStart(2, '0');
+            
+            document.getElementById('wingoTimer').textContent = `00:${formattedSeconds}`;
+            document.getElementById('predictionWingoTimer').textContent = formattedSeconds;
+            document.getElementById('infoTimeLeft').textContent = `00:${formattedSeconds}`;
+            
+            document.getElementById('periodNumber').textContent = currentPeriodNumber;
+            document.getElementById('predictionPeriodNumber').textContent = currentPeriodNumber;
+            document.getElementById('infoPeriodNumber').textContent = currentPeriodNumber;
+        }
+        
+        function showPredictionResult(predictionData) {
+            document.getElementById('predictionType').textContent = predictionData.type;
+            document.getElementById('predictionType').className = `prediction-type ${predictionData.type.toLowerCase()}`;
+            document.getElementById('winChance').textContent = `Confidence: ${predictionData.confidence}`;
+            
+            const predictionNumbersEl = document.getElementById('predictionNumbers');
+            predictionNumbersEl.innerHTML = '';
+            
+            predictionData.numbers.forEach(num => {
+                const numEl = document.createElement('div');
+                numEl.className = `result-number color-${num}`;
+                numEl.textContent = num;
+                predictionNumbersEl.appendChild(numEl);
+            });
+            
+            document.getElementById('finalNumDisplay').textContent = predictionData.finalNum;
+            document.getElementById('patternAnalysis').textContent = predictionData.pattern;
+            
+            document.getElementById('predictionResultView').style.display = 'flex';
+            document.getElementById('infoLastResult').textContent = predictionData.lastResult;
+        }
+        
+        function checkAndDisplayPrediction() {
+            const database = firebase.database();
+            const { periodNumber } = getWingoPeriod();
+            const predictionRef = database.ref(`predictions/wingo1m/${periodNumber}`);
+            
+            predictionRef.once('value', (snapshot) => {
+                const predictionData = snapshot.val();
+                if (predictionData) {
+                    showPredictionResult(predictionData);
+                    predictionMadeForCurrentPeriod = true;
+                    document.getElementById('predictButton').disabled = true;
+                    document.getElementById('predictButton').textContent = 'PREDICTION DONE';
+                } else {
+                    document.getElementById('predictionResultView').style.display = 'none';
+                    predictionMadeForCurrentPeriod = false;
+                    document.getElementById('predictButton').disabled = false;
+                    document.getElementById('predictButton').textContent = 'PREDICTION';
+                }
+            });
+
+            predictionRef.on('value', (snapshot) => {
+                const predictionData = snapshot.val();
+                if (predictionData && !predictionMadeForCurrentPeriod) {
+                    showPredictionResult(predictionData);
+                    predictionMadeForCurrentPeriod = true;
+                    document.getElementById('predictButton').disabled = true;
+                    document.getElementById('predictButton').textContent = 'PREDICTION DONE';
+                }
+            });
+        }
+
+        function generatePrediction() {
+            if (predictionMadeForCurrentPeriod) {
+                alert('A prediction for this period has already been generated.');
+                return;
+            }
+
+            const database = firebase.database();
+            const { periodNumber, istDate } = getWingoPeriod();
+            
+            const last3 = periodNumber.slice(-3);
+            const digit1 = parseInt(last3[0]);
+            const digit2 = parseInt(last3[1]);
+            const digit3 = parseInt(last3[2]);
+
+            let sum = digit1 + digit2 + digit3;
+            let product = digit1 * digit2 * digit3;
+            if (product === 0) {
+                product = 1;
+            }
+            
+            const digitSum = String(sum).split('').reduce((acc, digit) => acc + parseInt(digit), 0);
+            const timeFactor = istDate.getSeconds() % 10;
+            
+            let isSpecial = false;
+            if ((digit1 === digit2 && digit2 === digit3) ||
+                (digit1 + 1 === digit2 && digit2 + 1 === digit3) ||
+                (sum === 10 || sum === 20)) {
+                isSpecial = true;
+            }
+            
+            let finalNum = (sum * product + digitSum + timeFactor) % 10;
+            
+            const istHours = istDate.getHours();
+            const reverseMap = { 0: 5, 1: 6, 2: 7, 3: 8, 4: 9, 5: 0, 6: 1, 7: 2, 8: 3, 9: 4 };
+
+            if (istHours >= 9 && istHours < 16) {
+                finalNum = reverseMap[finalNum];
+            }
+
+            let confidence = "Low";
+            if (isSpecial || [0, 1, 8, 9].includes(finalNum)) {
+                confidence = "High";
+            }
+
+            const digitPairMapping = {
+                0: ["0", "4"],
+                1: ["1", "3"],
+                2: ["2", "6"],
+                3: ["3", "7"],
+                4: ["4", "8"],
+                5: ["5", "9"],
+                6: ["0", "6"],
+                7: ["7", "9"],
+                8: ["8", "2"],
+                9: ["9", "1"],
+            };
+            
+            const numbers = digitPairMapping[finalNum].map(Number);
+            const pattern = isSpecial ? "[SPECIAL] " + numbers.join(',') : "Normal";
+            const predictionType = finalNum >= 5 ? 'BIG' : 'SMALL';
+            const lastResult = isSpecial ? "[SPECIAL] " + predictionType + " " + numbers.join(' ') : predictionType + " " + numbers.join(' ');
+            
+            const predictionData = {
+                type: predictionType,
+                confidence: confidence,
+                numbers: numbers,
+                finalNum: finalNum,
+                pattern: pattern,
+                lastResult: lastResult,
+                timestamp: Date.now()
+            };
+            
+            database.ref(`predictions/wingo1m/${periodNumber}`).set(predictionData)
+                .then(() => {
+                    console.log('Prediction saved to Firebase successfully.');
+                })
+                .catch(error => {
+                    console.error('Failed to save prediction to Firebase:', error);
+                    alert('Failed to generate and save prediction. Please try again.');
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                const database = firebase.database();
+                const deviceId = getDeviceId();
+                document.getElementById('deviceIdDisplay').textContent = deviceId;
+                document.getElementById('accessStatus').textContent = 'Checking...';
+                
+                const accessRef = database.ref('access_control/' + deviceId);
+                const accessStatusEl = document.getElementById('accessStatus');
+                const predictionButton = document.getElementById('predictionButton');
+                
+                accessRef.on('value', (snapshot) => {
+                    const accessData = snapshot.val();
+                    const now = Date.now();
+                    isAccessGranted = accessData && accessData.isGranted === true && accessData.expiryTimestamp > now;
+                    
+                    accessStatusEl.textContent = isAccessGranted ? 'Granted' : 'Not Granted';
+                    accessStatusEl.className = isAccessGranted ? 'access-granted' : 'access-not-granted';
+                    predictionButton.classList.toggle('disabled', !isAccessGranted);
+                    
+                    document.getElementById('dashboardDeviceId').textContent = deviceId;
+                    document.getElementById('dashboardStatus').textContent = isAccessGranted ? 'Granted' : 'Not Granted';
+                    document.getElementById('dashboardStatus').style.color = isAccessGranted ? '#3fb950' : '#f85149';
+                    
+                    if (isAccessGranted) {
+                        accessExpiryTimestamp = accessData.expiryTimestamp;
+                        clearInterval(countdownInterval);
+                        countdownInterval = setInterval(updateCountdown, 1000);
+                        updateCountdown();
+                        document.getElementById('dashboardInfo').style.display = 'block';
+                        document.getElementById('serverInfo').style.display = 'block';
+                        document.getElementById('dashboardNoAccess').style.display = 'none';
+                        document.getElementById('predictionContent').style.display = 'block';
+                        document.getElementById('predictionNoAccess').style.display = 'none';
+                    } else {
+                        clearInterval(countdownInterval);
+                        document.getElementById('dashboardInfo').style.display = 'none';
+                        document.getElementById('serverInfo').style.display = 'none';
+                        document.getElementById('dashboardNoAccess').style.display = 'block';
+                        document.getElementById('predictionContent').style.display = 'none';
+                        document.getElementById('predictionNoAccess').style.display = 'block';
+                    }
+                });
+
+                clearInterval(wingoTimerInterval);
+                wingoTimerInterval = setInterval(updateWingoTimer, 1000);
+                updateWingoTimer();
+                
+                document.querySelectorAll('.prediction-ball').forEach(ball => {
+                    ball.addEventListener('click', function() {
+                        const number = this.getAttribute('data-number');
+                    });
+                });
+                
+                document.getElementById('predictButton').addEventListener('click', generatePrediction);
+                
+                document.getElementById('gotItButton').addEventListener('click', function() {
+                    document.getElementById('predictionResultView').style.display = 'none';
+                });
+                
+                document.getElementById('saveButton').addEventListener('click', function() {
+                    alert('Prediction saved!');
+                    document.getElementById('predictionResultView').style.display = 'none';
+                });
+                
+                checkAndDisplayPrediction();
+                
+            } catch (error) {
+                console.error("Firebase initialization error:", error);
+                // Handle Firebase initialization errors gracefully
+                document.getElementById('accessStatus').textContent = 'Error';
+                document.getElementById('accessStatus').style.color = '#f85149';
+            }
+        });
+
+        function loadPage(pageName, button) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(pageName + '-page').classList.add('active');
+            button.classList.add('active');
+        }
+
+        function checkAndLoadPrediction(button) {
+            if (isAccessGranted) {
+                loadPage('prediction', button);
+            } else {
+                const deviceId = getDeviceId();
+                document.getElementById('floatingDeviceId').textContent = deviceId;
+                document.getElementById('floatingView1').style.display = 'flex';
+            }
+        }
+        
+        function closeFloatingView() {
+            document.getElementById('floatingView1').style.display = 'none';
+        }
+
+        document.getElementById('copyButton').addEventListener('click', () => {
+            const deviceId = document.getElementById('deviceIdDisplay').textContent;
+            navigator.clipboard.writeText(deviceId).then(() => {
+                const copyMessage = document.getElementById('copyMessage');
+                copyMessage.classList.add('visible');
+                setTimeout(() => {
+                    copyMessage.classList.remove('visible');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        });
+    </script>
+</body>
+</html>
